@@ -1,0 +1,2 @@
+# TakeyariWin
+TakeyariViewerのGUIアプリケーション
