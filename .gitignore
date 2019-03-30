@@ -1,3 +1,9 @@
+
+dist/
+*.tar.xz
+output/
+TakeyariViewer/
+
 # Logs
 logs
 *.log

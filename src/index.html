@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="./takeyariGUI.js"></script>
+    <title>
+      TakeyariViewer
+    </title>
+  </head>
+  <body onload="onloadIndex();">
+    <h1>
+      TakeyariViewer
+    </h1>
+    <h2>
+      プロジェクト
+    </h2>
+    <h3>
+      新規プロジェクト作成
+    </h3>
+    <h4>
+      プロジェクト名
+    </h4>
+    <input id="project-name-new" type="text" value="">
+    <button onclick="createProject()">作成</button>
+    <h3>既存プロジェクト編集</h3>
+    <h4>プロジェクト名</h4>
+    <input id="project-name-build" type="text" value="">
+    <button onclick="buildProject()">サイト構築</button>
+    <h3>
+      プロジェクトフォルダ
+    </h3>
+    <input id="project-directory-path" type="text" value="">
+  </body>
+</html>

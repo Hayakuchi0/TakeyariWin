@@ -1,0 +1,59 @@
+{
+  "name": "takeyari-win",
+  "version": "0.0.0",
+  "description": "Desktop GUI Application of TakeyariViewer",
+  "main": "main.js",
+  "scripts": {
+    "test": "NODE_ENV=development electron main.js",
+    "dist": "NODE_ENV=distribution electron-builder -lw"
+  },
+  "build": {
+    "asar": false,
+    "files": [
+      "main.js",
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      "TakeyariViewer/**/*"
+    ],
+    "appId": "info.hinesm.takeyariwin.desktop",
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm"
+      ],
+      "category": "Office"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hayakuchi0/TakeyariWin.git"
+  },
+  "author": {
+    "name": "Hayakuchi",
+    "email": "hayakuchi@hinesm.info"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hayakuchi0/TakeyariWin/issues"
+  },
+  "homepage": "https://github.com/Hayakuchi0/TakeyariWin#readme",
+  "devDependencies": {
+    "electron": "^4.1.1",
+    "electron-builder": "^20.39.0",
+    "electron-rebuild": "^1.8.4",
+    "electron-webpack": "^2.6.2",
+    "webpack": "^4.29.6"
+  },
+  "dependencies": {
+    "decompress": "^4.2.0",
+    "decompress-tarxz": "^2.1.1",
+    "fs-extra": "^7.0.1",
+    "node-wget": "^0.4.3",
+    "path": "^0.12.7"
+  }
+}

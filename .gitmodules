@@ -1,0 +1,3 @@
+[submodule "TakeyariViewer"]
+	path = TakeyariViewer
+	url = https://github.com/Hayakuchi0/TakeyariViewer.git
