@@ -7,6 +7,7 @@ exports.nodeInstallProject = function(downloadTarxzDir, outputDir, projectDir, c
 	let result = false;
 	let params = {};
 	params['callback'] = callback;
+  params['message'] = put;
 	params['nodeVersion'] = '8.10.0';
 	params['nodeBaseName'] = 'node-v'+params['nodeVersion']+'-linux-'+process.arch;
 	params['nodeName'] = params['nodeBaseName'] + '.tar.xz';
@@ -18,37 +19,34 @@ exports.nodeInstallProject = function(downloadTarxzDir, outputDir, projectDir, c
 	params['libToPath'] = path.join(projectDir,'lib');
 	params['binFromPath'] = path.join(params['fromCopyDirectory'],'bin');
 	params['binToPath'] = path.join(projectDir,'bin');
-	if((!fs.existsSync(params['libToPath']))||(!fs.existsSync(params['binToPath']))) {
-		if(fs.existsSync(params['outputPath'])) {
-			stepCopyCommand(params);
-		} else {
-			if(fs.existsSync(params['nodePath'])) {
-				stepDecompressNodeTarxz(params);
-			}
-			else {
-				stepWgetNode(params)
-			}
-		}
+  if(fs.existsSync(params['outputPath'])) {
+	  stepCopyCommand(params);
 	} else {
-		callbackParam(params,true);
+	  if(fs.existsSync(params['nodePath'])) {
+			stepDecompressNodeTarxz(params);
+		}
+		else {
+			stepWgetNode(params)
+		}
 	}
 }
 async function stepWgetNode(params) {
-	console.log('start download!');
+	params['message']('start download'+params['nodeName']);
 	await wget({url:params['nodeUrl'],dest:params['nodePath']}, async function(error, response, body) {
 		if(error) {
-			console.log(error);
+			params['message'](error);
 			callbackParam(params,false);
 		} else {
-			console.log('end download!');
+			params['message']('end download!');
 			await stepDecompressNodeTarxz(params);
 		}
 	});
 }
 async function stepDecompressNodeTarxz(params) {
+	params['message']("start decompress node and npm");
 	let promise = decompress(params['nodePath'],params['outputPath'],{plugins:[decompressTarxz()]});
 	await Promise.all([promise]).then(function() {
-		console.log("decompressed");
+		params['message']("end decompress!");
 		stepCopyCommand(params);
 	});
 }
@@ -65,4 +63,7 @@ function callbackParam(params,result) {
 	if(params['callback']) {
 		params['callback'](result);
 	}
+}
+function put(message) {
+  console.log(message);
 }

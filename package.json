@@ -23,8 +23,6 @@
     },
     "linux": {
       "target": [
-        "deb",
-        "rpm"
       ],
       "category": "Office"
     }
@@ -53,7 +51,9 @@
     "decompress": "^4.2.0",
     "decompress-tarxz": "^2.1.1",
     "fs-extra": "^7.0.1",
+    "fstream": "^1.0.11",
     "node-wget": "^0.4.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "unzip": "^0.1.11"
   }
 }
