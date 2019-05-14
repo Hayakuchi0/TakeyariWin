@@ -15,8 +15,7 @@ exports.setMessageProc = function(proc,put,callback){
 }
 var transString = function(data) {
   let locale = Intl.NumberFormat().resolvedOptions().locale;
-  console.log(locale)
-  if(("win32" == process.pratform)&&(locale.toString().startsWith("ja"))) {
+  if((process.platform.startsWith("win32"))&&(locale.toString().startsWith("ja"))) {
     let encoding = "Shift_JIS";
     return iconv.decode(data,encoding);
   }
