@@ -3,11 +3,11 @@ const decompress = require('decompress');
 const decompressTarxz = require('decompress-tarxz');
 const path = require('path');
 const fs = require('fs-extra');
-exports.nodeInstallProject = function(downloadTarxzDir, outputDir, projectDir, callback) {
+exports.nodeInstallProject = function(downloadTarxzDir, outputDir, projectDir, callback, message) {
 	let result = false;
 	let params = {};
 	params['callback'] = callback;
-  params['message'] = put;
+  params['message'] = message;
 	params['nodeVersion'] = '8.10.0';
 	params['nodeBaseName'] = 'node-v'+params['nodeVersion']+'-linux-'+process.arch;
 	params['nodeName'] = params['nodeBaseName'] + '.tar.xz';
@@ -19,9 +19,10 @@ exports.nodeInstallProject = function(downloadTarxzDir, outputDir, projectDir, c
 	params['libToPath'] = path.join(projectDir,'lib');
 	params['binFromPath'] = path.join(params['fromCopyDirectory'],'bin');
 	params['binToPath'] = path.join(projectDir,'bin');
-  if(fs.existsSync(params['outputPath'])) {
+  if(fs.existsSync(params['libToPath'])&&fs.existsSync(params['binToPath'])) {
 	  stepCopyCommand(params);
 	} else {
+    fs.removeSync(params['outputPath']);
 	  if(fs.existsSync(params['nodePath'])) {
 			stepDecompressNodeTarxz(params);
 		}
@@ -63,7 +64,4 @@ function callbackParam(params,result) {
 	if(params['callback']) {
 		params['callback'](result);
 	}
-}
-function put(message) {
-  console.log(message);
 }

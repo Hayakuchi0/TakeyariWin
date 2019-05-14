@@ -10,10 +10,13 @@ var onloadIndex = function(){
   projectDirectory.value = getProjectDirectory();
 };
 var createProject = function(){
+  clean();
   let projectName = document.getElementById("project-name-new").value;
   if(projectName && (projectName.length > 0)) {
-    let projectPath= path.join(getProjectDirectory(),projectName);
-    fs.mkdirsSync(getProjectDirectory());
+    let projectDirectory = document.getElementById("project-directory-path");
+    pdpath = projectDirectory.value;
+    fs.mkdirsSync(pdpath);
+    let projectPath= path.join(pdpath,projectName);
     if(fs.existsSync(projectPath)) {
         put("project already exist.");
     } else {
@@ -25,71 +28,39 @@ var createProject = function(){
   }
 };
 var buildProject = function() {
+  clean();
   let projectName = document.getElementById("project-name-build").value;
   if(projectName && (projectName.length > 0)) {
     put("build start!");
-    let projectPath= path.join(getProjectDirectory(),projectName);
+    let projectDirectory = document.getElementById("project-directory-path");
+    pdpath = projectDirectory.value;
+    let projectPath= path.join(pdpath,projectName);
+    let args = [];
+    let sendWithBuild = document.getElementById("send-with-build");
+    if(sendWithBuild.checked) {
+      let protocol = document.getElementById("protocol");
+      if(protocol.value == "none") {
+        put("Please select protocol.");
+        return;
+      } else {
+        args.push(protocol.value);
+      }
+    }
     if(process.platform === "linux") {
-      buildLinux(projectPath);
+      const projectbuilder = require("./modules/projectbuilder/linux");
+      projectbuilder.buildLinux(projectPath,put,args);
     } else if(process.platform === "win32") {
-      buildWindows(projectPath);
+      const projectbuilder = require("./modules/projectbuilder/windows");
+      projectbuilder.buildWindows(projectPath,put,args);
     }
   }
 };
-var buildLinux = function(projectPath) {
-  const nil = require("./modules/nodeinstaller/linux");
-  nil.nodeInstallProject(util.getResourcePath(), util.getResourcePath() ,projectPath, function(result) {
-    if(result) {
-      let buildingProc = exec.spawn(path.join(projectPath,"build.sh"));
-      setMessageProc(buildingProc,function(){
-        put("build end!");
-      });
-    } else {
-      put("failed to provide tool for build.");
-    }
-  });
-};
-var buildWindows = function(projectPath) {
-  const niw = require("./modules/nodeinstaller/windows");
-  niw.nodeInstallProject(util.getResourcePath(), util.getResourcePath() ,projectPath, function(result) {
-    if(result) {
-      put("downloading dependencies package.");
-      let originPath = process.env["PATH"];
-      let npmInstallProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("bin","node_modules","npm","bin","npm-cli.js"),"install"],{cwd:projectPath});//パスを通し、文字コードをutf-8に変更する必要がある
-      setMessageProc(npmInstallProc,function(){
-        put("building portfolio site.");
-        let tscProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("node_modules","typescript","bin","tsc")],{cwd:projectPath});
-        setMessageProc(tscProc,function() {
-          let nodeProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("store_bundle","store_src","main.js")],{cwd:projectPath});
-          setMessageProc(nodeProc,function(){
-            let ngBuildProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("node_modules","@angular","cli","bin","ng"),"build","--prod"],{cwd:projectPath});
-            setMessageProc(ngBuildProc,function(){
-              put("complete building.");
-              put("build end!");
-            });
-          });
-        });
-      });
-    } else {
-      put("failed to provide tool for build.");
-    }
-  },function(message){
-    put(message);
-  });
-};
-var setMessageProc = function(proc,callback){
-  proc.stdout.on('data',function(data) {
-    put(data.toString());
-  });
-  proc.stderr.on('data',function(data) {
-    put(data.toString());
-  });
-  proc.on('close',function(code) {
-    if(callback) {
-      callback();
-    }
-  });
+var clean = function() {
+  let messageElement = document.getElementById("messageElement");
+  messageElement.value = "";
 }
 var put = function(message) {
-  console.log(message);
+  let messageElement = document.getElementById("messageElement");
+  messageElement.value = messageElement.value + "\n" + message;
+  messageElement.scrollTop = messageElement.scrollHeight;
 }

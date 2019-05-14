@@ -25,10 +25,11 @@ exports.nodeInstallProject = function(downloadZipDir, outputDir, projectDir, cal
   params['npmModuleToPath'] = path.join(params['npmDependDir'],'node_modules');
   params['npmPackageFromPath'] = path.join(params['outputPath'],params['nodeBaseName'],'node_modules','npm','package.json');
   params['npmPackageToPath'] = path.join(params['npmDependDir'],'package.json');
-  if(fs.existsSync(params['outputPath'])) {
+  if(existTools(params)) {
     params['message']("output is exist");
     stepCopyCommand(params);
   } else {
+    fs.removeSync(params['outputPath']);
     if(fs.existsSync(params['nodePath'])) {
       stepDecompressNodeZip(params);
     }
@@ -95,13 +96,14 @@ function stepCopyCommand(params) {
       params['message']('end copy npm package.json.');
     }
   }
-  params['callback'](
-    fs.existsSync(params['nodeToPath'])&&
+  params['callback'](existTools(params));
+}
+function existTools(params) {
+    return fs.existsSync(params['nodeToPath'])&&
     fs.existsSync(params['npmLibToPath'])&&
     fs.existsSync(params['npmBinToPath'])&&
     fs.existsSync(params['npmModuleToPath'])&&
-    fs.existsSync(params['npmPackageToPath'])
-  );
+    fs.existsSync(params['npmPackageToPath']);
 }
 function nothing(arg) {}
 function put(func) {

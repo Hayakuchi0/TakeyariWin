@@ -25,10 +25,23 @@
     <h3>既存プロジェクト編集</h3>
     <h4>プロジェクト名</h4>
     <input id="project-name-build" type="text" value="">
-    <button onclick="buildProject()">サイト構築</button>
+    <button onclick="buildProject()">ビルド</button>
     <h3>
-      プロジェクトフォルダ
+      設定
     </h3>
+    <h4>
+      プロジェクトフォルダ
+    </h4>
     <input id="project-directory-path" type="text" value="">
+    <h4>
+      サーバーへの送信設定
+    </h4>
+    <input type="checkbox" id="send-with-build">ビルド時にサーバーへ送信する
+    <select id="protocol">
+      <option value="none">プロトコル</option>
+      <option value="ftp">FTP</option>
+    </select>
+    <textarea rows="10" cols="120" id="messageElement">
+    </textarea>
   </body>
 </html>
