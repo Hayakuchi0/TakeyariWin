@@ -1,3 +1,6 @@
+const electron = require("electron")
+const ipcRenderer = electron.ipcRenderer;
+const shell = electron.shell;
 const path = require("path");
 const fs = require("fs-extra");
 const exec = require("child_process");
@@ -8,13 +11,13 @@ var getProjectDirectory = function() {
 var onloadIndex = function(){
   let projectDirectory = document.getElementById("project-directory-path");
   projectDirectory.value = getProjectDirectory();
+  reloadProjectsList();
 };
 var createProject = function(){
   clean();
   let projectName = document.getElementById("project-name-new").value;
   if(projectName && (projectName.length > 0)) {
-    let projectDirectory = document.getElementById("project-directory-path");
-    pdpath = projectDirectory.value;
+    let pdpath = projectDirectoryValue();
     fs.mkdirsSync(pdpath);
     let projectPath= path.join(pdpath,projectName);
     if(fs.existsSync(projectPath)) {
@@ -23,6 +26,7 @@ var createProject = function(){
       fs.copySync(path.join(util.getResourcePath(),'TakeyariViewer'),projectPath);
       if(fs.existsSync(projectPath)) {
         put("project create success!");
+        reloadProjectsList();
       }
     }
   }
@@ -30,11 +34,10 @@ var createProject = function(){
 var buildProject = function() {
   clean();
   let projectName = document.getElementById("project-name-build").value;
-  if(projectName && (projectName.length > 0)) {
+  let pdpath = projectDirectoryValue();
+  let projectPath= path.join(pdpath,projectName);
+  if(fs.existsSync(projectPath) && projectName && (projectName.length > 0)) {
     put("build start!");
-    let projectDirectory = document.getElementById("project-directory-path");
-    pdpath = projectDirectory.value;
-    let projectPath= path.join(pdpath,projectName);
     let args = [];
     let sendWithBuild = document.getElementById("send-with-build");
     if(sendWithBuild.checked) {
@@ -53,14 +56,81 @@ var buildProject = function() {
       const projectbuilder = require("./modules/projectbuilder/windows");
       projectbuilder.buildWindows(projectPath,put,args);
     }
+  } else {
+    put("project name is invalid.");
   }
 };
+var openConfig = function() {
+  ipcRenderer.send('config-control',{type:'open', path:path.join(workingDirectoryPath(),'CONFIG')});
+};
+var openContent = function() {
+  let contentDirectory = path.join(workingDirectoryPath(), "CONTENT");
+  shell.openItem(contentDirectory);
+}
+var openSend = function() {
+  let protocol = document.getElementById("protocol").value;
+  ipcRenderer.send('send-control',{type:'open', path:path.join(workingDirectoryPath(),'CONFIG','send'), protocol:protocol});
+};
+var reloadProjectDirectory = function() {
+  let fileElement = document.getElementById("project-directory-selecter");
+  let pathElement = document.getElementById("project-directory-path");
+  pathElement.value = fileElement.files[0].path;
+  let projectName = document.getElementById("project-name-build").value;
+  ipcRenderer.send('config-control',{type:'defineConfigDirectory', path:path.join(projectDirectoryValue(),projectName,'CONFIG')});
+};
+var reloadProjectsList = function() {
+  fs.readdir(projectDirectoryValue(), function(err, files){
+    if (err){
+      put(err.name);
+      put(err.message);
+      throw err;
+    }
+    let selectElement = document.getElementById("project-name-selector");
+    let optionLength = selectElement.options.length;
+    for(let i=0;i<optionLength;i++){
+      selectElement.remove(0);
+    }
+    files.forEach(function(file){
+      var optionElement = document.createElement("option");
+      optionElement.value = file;
+      optionElement.innerText = file;
+      selectElement.appendChild(optionElement);
+    });
+    if(selectElement.options.length<1) {
+      var optionElement = document.createElement("option");
+      optionElement.value = "";
+      optionElement.innerText = "候補なし";
+      selectElement.appendChild(optionElement);
+    } else {
+      reloadProjectName();
+    }
+  });
+}
+var reloadProjectName = function() {
+  let nameElement = document.getElementById("project-name-build");
+  let selectElement = document.getElementById("project-name-selector");
+  nameElement.value = selectElement.value;
+  ipcRenderer.send('config-control',{type:'defineConfigDirectory', path:path.join(projectDirectoryValue(),nameElement.value,'CONFIG')});
+}
+var reloadProtocol = function() {
+  let protocol = document.getElementById("protocol").value;
+  ipcRenderer.send('send-control',{type:'changeProtocol', path:path.join(workingDirectoryPath(),'CONFIG','send'), protocol:protocol});
+}
 var clean = function() {
   let messageElement = document.getElementById("messageElement");
   messageElement.value = "";
-}
+};
 var put = function(message) {
   let messageElement = document.getElementById("messageElement");
   messageElement.value = messageElement.value + "\n" + message;
   messageElement.scrollTop = messageElement.scrollHeight;
+};
+var projectDirectoryValue = function() {
+  let pdElement = document.getElementById("project-directory-path");
+  return pdElement.value;
+}
+var workingDirectoryPath = function() {
+  let projectName = document.getElementById("project-name-build").value;
+  let pdpath = projectDirectoryValue();
+  return path.join(pdpath,projectName);
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="./configGUI.js"></script>
+    <title>
+      サイト設定-TakeyariViewer
+    </title>
+  </head>
+  <body>
+    <h1>サイト設定</h1>
+    <button onclick="saveAll()">全て保存</button>
+    <button onclick="readAll()">読み込み</button>
+    <h2>サイト概要(about.txt)</h2>
+    <textarea rows="10" cols="50" id="config-about"></textarea><br>
+    <button onclick="saveAbout()">保存</button>
+    <button onclick="readAbout()">読み込み</button>
+    <h2>コピーライト(copyright.txt)</h2>
+    <input type="text" id="config-copyright"></input>
+    <button onclick="saveCopyright()">保存</button>
+    <button onclick="readCopyright()">読み込み</button>
+    <h2>文字コード(encoding.txt)</h2>
+    <input type="text" id="config-encoding"></input>
+    <button onclick="saveEncoding()">保存</button>
+    <button onclick="readEncoding()">読み込み</button>
+    <h2>サイト名(sitename.txt)</h2>
+    <input type="text" id="config-sitename"></input>
+    <button onclick="saveSitename()">保存</button>
+    <button onclick="readSitename()">読み込み</button>
+    <h2>サイト概要背景(aboutimage.png)</h2>
+    <object style="width:100%;height:400px;overflow:scroll;" data="" id="config-view-aboutimage" onload="reloadAboutImage()"></object>
+    <input type="file" id="config-aboutimage" onchange="selectAboutImage()"></input>
+    <button onclick="saveAboutImage()">保存</button>
+    <button onclick="readAboutImage()">読み込み</button>
+    <h2>サイトトップ背景(topimage.png)</h2>
+    <object style="width:100%;height:400px;overflow:scroll;" data="" id="config-view-topimage" onload="reloadTopImage()"></object>
+    <input type="file" id="config-topimage" onchange="selectTopImage()"></input>
+    <button onclick="saveTopImage()">保存</button>
+    <button onclick="readTopImage()">読み込み</button>
+    <h2>ファビコン(favicon.ico)</h2>
+    <object data="" id="config-view-favicon" onload="reloadFavicon()"></object><br>
+    <input type="file" id="config-favicon" onchange="selectFavicon()"></input>
+    <button onclick="saveFavicon()">保存</button>
+    <button onclick="readFavicon()">読み込み</button>
+  </body>
+</html>
