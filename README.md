@@ -7,7 +7,7 @@ README japanese only yet.
 
 # 依存パッケージ
 
-sudo apt install rpm g++-multilib wine-development mono-devel
+sudo apt install rpm gcc-multilib g++-multilib wine-development mono-devel lzma-native
 
 
 # チュートリアル
@@ -17,7 +17,11 @@ sudo apt install rpm g++-multilib wine-development mono-devel
 
 # ビルド手順
 
-整備中
+```
+$ npm install
+$ npm electron-rebuild
+$ npm run dist
+```
 
 
 # 使用方法
