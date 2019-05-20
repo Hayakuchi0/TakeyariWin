@@ -25,36 +25,43 @@ var createProject = function(){
     } else {
       fs.copySync(path.join(util.getResourcePath(),'TakeyariViewer'),projectPath);
       if(fs.existsSync(projectPath)) {
+        fs.mkdirsSync(path.join(projectPath,"CONTENT"));
         put("project create success!");
         reloadProjectsList();
       }
     }
+  } else {
+    put("project name is valid.");
   }
 };
 var buildProject = function() {
   clean();
   let projectName = document.getElementById("project-name-build").value;
   let pdpath = projectDirectoryValue();
-  let projectPath= path.join(pdpath,projectName);
-  if(fs.existsSync(projectPath) && projectName && (projectName.length > 0)) {
-    put("build start!");
-    let args = [];
-    let sendWithBuild = document.getElementById("send-with-build");
-    if(sendWithBuild.checked) {
-      let protocol = document.getElementById("protocol");
-      if(protocol.value == "none") {
-        put("Please select protocol.");
-        return;
-      } else {
-        args.push(protocol.value);
+  if(projectName && (projectName.length > 0)) {
+    let projectPath= path.join(pdpath,projectName);
+    if(fs.existsSync(projectPath)) {
+      put("build start!");
+      let args = [];
+      let sendWithBuild = document.getElementById("send-with-build");
+      if(sendWithBuild.checked) {
+        let protocol = document.getElementById("protocol");
+        if(protocol.value == "none") {
+          put("Please select protocol.");
+          return;
+        } else {
+          args.push(protocol.value);
+        }
       }
-    }
-    if(process.platform === "linux") {
-      const projectbuilder = require("./modules/projectbuilder/linux");
-      projectbuilder.buildLinux(projectPath,put,args);
-    } else if(process.platform === "win32") {
-      const projectbuilder = require("./modules/projectbuilder/windows");
-      projectbuilder.buildWindows(projectPath,put,args);
+      if(process.platform === "linux") {
+        const projectbuilder = require("./modules/projectbuilder/linux");
+        projectbuilder.buildLinux(projectPath,put,args);
+      } else if(process.platform === "win32") {
+        const projectbuilder = require("./modules/projectbuilder/windows");
+        projectbuilder.buildWindows(projectPath,put,args);
+      }
+    } else {
+      put();
     }
   } else {
     put("project name is invalid.");
@@ -65,7 +72,12 @@ var openConfig = function() {
 };
 var openContent = function() {
   let contentDirectory = path.join(workingDirectoryPath(), "CONTENT");
-  shell.openItem(contentDirectory);
+  if(fs.existsSync(workingDirectoryPath())) {
+    shell.openItem(contentDirectory);
+  } else {
+    clean();
+    put("project is not create yet.");
+  }
 }
 var openSend = function() {
   let protocol = document.getElementById("protocol").value;
@@ -81,6 +93,9 @@ var reloadProjectDirectory = function() {
 var reloadProjectsList = function() {
   fs.readdir(projectDirectoryValue(), function(err, files){
     if (err){
+      if(err.message.startsWith("ENOENT: no such file or directory,")) {
+        return;
+      }
       put(err.name);
       put(err.message);
       throw err;
