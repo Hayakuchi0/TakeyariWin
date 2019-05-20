@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const exec = require("child_process");
 const util = require("./../util");
 const share = require("./share");
-exports.buildWindows = function(projectPath, put, args) {
+exports.buildWindows = function(projectPath, put, callback, args) {
   const niw = require("./nodeinstaller/windows");
   niw.nodeInstallProject(util.getResourcePath(), util.getResourcePath() ,projectPath, function(result) {
     if(result) {
@@ -23,6 +23,7 @@ exports.buildWindows = function(projectPath, put, args) {
               share.setMessageProc(sendProc, put, function() {
                 put("complete building.");
                 put("build end!");
+                callback(true);
               });
             });
           });
@@ -30,6 +31,7 @@ exports.buildWindows = function(projectPath, put, args) {
       });
     } else {
       put("failed to provide tool for build.");
+      callback(false);
     }
   },function(message){
     put(message);

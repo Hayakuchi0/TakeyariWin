@@ -1,4 +1,6 @@
 const electron = require('electron');
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.BrowserWindow;
 const ipcMain = electron.ipcMain;
 const app = electron.app;
@@ -53,6 +55,19 @@ ipcMain.on('send-control',function(e, message){
       break;
     case "changeProtocol":
       sendWindow.webContents.send('send-window',{type:'changeProtocol',path:message.path, protocol:message.protocol});
+      break;
+    default:
+      break;
+  }
+});
+var menuBasic = new Menu();
+menuBasic.append(new MenuItem({ label:"Copy", accelarator: "CommandOrCtrl+C", role: "copy"}));
+menuBasic.append(new MenuItem({ label:"Cut", accelarator: "CommandOrCtrl+T", role: "cut"}));
+menuBasic.append(new MenuItem({ label:"Paste", accelarator: "CommandOrCtrl+V", role: "paste"}));
+ipcMain.on('context-menu',function(e, message){
+  switch(message.type) {
+    case "basic":
+      menuBasic.popup(message.currentWindow);
       break;
     default:
       break;

@@ -1,6 +1,7 @@
 const electron = require("electron")
 const ipcRenderer = electron.ipcRenderer;
 const shell = electron.shell;
+const remote = electron.remote;
 const path = require("path");
 const fs = require("fs-extra");
 const exec = require("child_process");
@@ -55,10 +56,10 @@ var buildProject = function() {
       }
       if(process.platform === "linux") {
         const projectbuilder = require("./modules/projectbuilder/linux");
-        projectbuilder.buildLinux(projectPath,put,args);
+        projectbuilder.buildLinux(projectPath,put,preview,args);
       } else if(process.platform === "win32") {
         const projectbuilder = require("./modules/projectbuilder/windows");
-        projectbuilder.buildWindows(projectPath,put,args);
+        projectbuilder.buildWindows(projectPath,put,preview,args);
       }
     } else {
       put();
@@ -140,6 +141,20 @@ var put = function(message) {
   messageElement.value = messageElement.value + "\n" + message;
   messageElement.scrollTop = messageElement.scrollHeight;
 };
+var preview = function(result) {
+  if(result == true) {
+    let address = path.resolve(path.join(workingDirectoryPath(),"dist","TakeyariViewer","index.html"));
+    if(path.sep != "/") {
+      let splitedAddress = address.split(path.sep);
+      address = "";
+      splitedAddress.forEach(function(filename){
+        address = address + "/" + filename;
+      });
+    }
+    address = "file://" + address;
+    shell.openExternal(address);
+  }
+};
 var projectDirectoryValue = function() {
   let pdElement = document.getElementById("project-directory-path");
   return pdElement.value;
@@ -149,3 +164,6 @@ var workingDirectoryPath = function() {
   let pdpath = projectDirectoryValue();
   return path.join(pdpath,projectName);
 }
+window.addEventListener('contextmenu', function(e){
+  ipcRenderer.send('context-menu',{type:'basic', e:e, currentWindow:remote.getCurrentWindow()});
+});

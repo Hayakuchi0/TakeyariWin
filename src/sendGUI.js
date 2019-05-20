@@ -1,4 +1,6 @@
-const ipcRenderer = require("electron").ipcRenderer;
+const electron = require("electron");
+const ipcRender = electron.ipcRenderer;
+const remote = electron.remote;
 const ftp = require("./modules/editconfig/send/ftp");
 
 var SEND_DIRECTORY = "";
@@ -78,4 +80,7 @@ ipcRenderer.on('send-window', function(e, message){
     default:
       break;
   }
+});
+window.addEventListener('contextmenu', function(e){
+  ipcRenderer.send('context-menu',{type:'basic', e:e, currentWindow:remote.getCurrentWindow()});
 });

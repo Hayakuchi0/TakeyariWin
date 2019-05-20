@@ -4,6 +4,7 @@ dist/
 *.tar.xz
 output/
 TakeyariViewer/
+package-lock.json
 
 # Logs
 logs
