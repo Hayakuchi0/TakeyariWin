@@ -21,6 +21,9 @@ exports.buildWindows = function(projectPath, put, callback, args) {
               let command = ["/c",path.join("bin","node.exe"),path.join("store_bundle","store_src","send","main.js")].concat(args);
               let sendProc = exec.spawn("cmd",command,{cwd:projectPath});
               share.setMessageProc(sendProc, put, function() {
+                put("setting default config for windows...");
+                save.saveEncoding("Shift-JIS");
+                put("end the setting default config for windows.");
                 put("complete building.");
                 put("build end!");
                 callback(true);
