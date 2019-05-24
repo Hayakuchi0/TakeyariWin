@@ -1,11 +1,12 @@
 {
   "name": "takeyari-win",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "Desktop GUI Application of TakeyariViewer",
   "main": "main.js",
   "scripts": {
     "test": "NODE_ENV=development electron main.js",
-    "dist": "NODE_ENV=distribution electron-builder -lw"
+    "dist": "NODE_ENV=distribution electron-builder -lw",
+    "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "asar": false,

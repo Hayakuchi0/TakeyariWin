@@ -1,5 +1,5 @@
 const electron = require("electron");
-const ipcRender = electron.ipcRenderer;
+const ipcRenderer = electron.ipcRenderer;
 const remote = electron.remote;
 const save = require('./modules/editconfig/save');
 const read = require('./modules/editconfig/read');

@@ -3,32 +3,67 @@ const fs = require("fs-extra");
 const exec = require("child_process");
 const util = require("./../util");
 const share = require("./share");
+var cmds = {};
+cmds["npmInstall"]=["/c","node",path.join("bin","node_modules","npm","bin","npm-cli.js"),"install"];
+cmds["tsc"]=["/c","node",path.join("node_modules","typescript","bin","tsc")];
+cmds["node"]=["/c","node",path.join("store_bundle","store_src","main.js")];
+cmds["ngBuild"]=["/c","node",path.join("node_modules","@angular","cli","bin","ng"),"build","--prod"];
+cmds["send"]=["/c","node",path.join("store_bundle","store_src","send","main.js")];
+var WindowsBuilder = function(projectPath, put, callback, args) {
+  let self = this;
+  this.projectPath = projectPath;
+  this.put = put;
+  this.callback = callback;
+  this.args = args;
+  this.originPath= "";
+  this.build = function() {
+    this.npmInstall();
+  };
+  this.getOptions = function() {
+    let options = {
+      cwd:self.projectPath,
+      env: {
+        PATH:process.env.PATH+";"+path.resolve(path.join(self.projectPath,"bin"))
+      }
+    };
+    return options;
+  }
+  this.npmInstall = function() {
+    this.put("downloading dependencies package...");
+    let proc = exec.spawn("cmd",cmds["npmInstall"],self.getOptions());
+    share.setMessageProc(proc, self.put, self.tsc);
+  };
+  this.tsc = function(){
+    this.put("download end!");
+    this.put("building portfolio site.");
+    let proc = exec.spawn("cmd",cmds["tsc"],self.getOptions());
+    share.setMessageProc(proc,self.put,self.node);
+  };
+  this.node = function(){
+    let proc = exec.spawn("cmd",cmds["node"],self.getOptions());
+    share.setMessageProc(proc,self.put,self.ngBuild);
+  };
+  this.ngBuild = function(){
+    let proc = exec.spawn("cmd",cmds["ngBuild"],self.getOptions());
+    share.setMessageProc(proc,self.put,self.send);
+  };
+  this.send = function(){
+    let command = cmds["send"].concat(self.args);
+    let proc = exec.spawn("cmd",command,self.getOptions());
+    share.setMessageProc(proc, self.put, self.end);
+  };
+  this.end = function(){
+    put("complete building.");
+    put("build end!");
+    callback(true);
+  };
+}
 exports.buildWindows = function(projectPath, put, callback, args) {
   const niw = require("./nodeinstaller/windows");
   niw.nodeInstallProject(util.getResourcePath(), util.getResourcePath() ,projectPath, function(result) {
     if(result) {
-      put("downloading dependencies package.");
-      let originPath = process.env["PATH"];
-      let npmInstallProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("bin","node_modules","npm","bin","npm-cli.js"),"install"],{cwd:projectPath});
-      share.setMessageProc(npmInstallProc,put,function(){
-        put("building portfolio site.");
-        let tscProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("node_modules","typescript","bin","tsc")],{cwd:projectPath});
-        share.setMessageProc(tscProc,put,function() {
-          let nodeProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("store_bundle","store_src","main.js")],{cwd:projectPath});
-          share.setMessageProc(nodeProc,put,function(){
-            let ngBuildProc = exec.spawn("cmd",["/c",path.join("bin","node.exe"),path.join("node_modules","@angular","cli","bin","ng"),"build","--prod"],{cwd:projectPath});
-            share.setMessageProc(ngBuildProc,put,function(){
-              let command = ["/c",path.join("bin","node.exe"),path.join("store_bundle","store_src","send","main.js")].concat(args);
-              let sendProc = exec.spawn("cmd",command,{cwd:projectPath});
-              share.setMessageProc(sendProc, put, function() {
-                put("complete building.");
-                put("build end!");
-                callback(true);
-              });
-            });
-          });
-        });
-      });
+      let builder = new WindowsBuilder(projectPath, put, callback, args);
+      builder.build();
     } else {
       put("failed to provide tool for build.");
       callback(false);

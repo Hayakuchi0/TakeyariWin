@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const exec = require("child_process");
 const util = require("./modules/util");
+const save = require("./modules/editconfig/save");
 var getProjectDirectory = function() {
   return path.join(process.env[(process.platform == "win32") ? "USERPROFILE" : "HOME"],"TakeyariViewer");
 };
@@ -27,6 +28,11 @@ var createProject = function(){
       fs.copySync(path.join(util.getResourcePath(),'TakeyariViewer'),projectPath);
       if(fs.existsSync(projectPath)) {
         fs.mkdirsSync(path.join(projectPath,"CONTENT"));
+        if(process.platform === "win32") {
+           put("setting default config for windows...");
+           save.saveEncoding(path.join(projectPath,"CONFIG"),"Shift-JIS");
+           put("end the setting default config for windows.");
+        }
         put("project create success!");
         reloadProjectsList();
       }
