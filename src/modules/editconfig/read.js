@@ -23,6 +23,9 @@ exports.readEncoding = function(configDirectory) {
 exports.readSitename = function(configDirectory) {
   return readConfig(configDirectory,'sitename.txt');
 };
+exports.readTakeyariViewerVersion = function(configDirectory) {
+  return JSON.parse(fs.readFileSync(path.join(configDirectory,"..","package.json"),"utf-8"))["version"];
+}
 var readConfig = function(directoryPath, name) {
   let configPath = path.join(directoryPath,name);
   let buffer = fs.readFileSync(configPath);

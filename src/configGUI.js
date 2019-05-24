@@ -7,7 +7,6 @@ const file = require('./modules/editconfig/file');
 
 var CONFIG_DIRECTORY = "";
 var saveAll = function() {
-  console.log("start save...");
   let configs = {};
   configs['about'] = getValue('about');
   configs['copyright'] = getValue('copyright');
@@ -17,7 +16,6 @@ var saveAll = function() {
   saveAboutImage();
   saveTopImage();
   saveFavicon();
-  console.log("finished save!");
 };
 var saveAbout = function() {
   save.saveAbout(CONFIG_DIRECTORY,getValue('about'),getEncoding());
@@ -41,6 +39,9 @@ var saveFavicon = function() {
   file.setFavicon(CONFIG_DIRECTORY,getDataPath("favicon"));
 };
 var readAll = function() {
+  let version = read.readTakeyariViewerVersion(CONFIG_DIRECTORY);
+  let versionTag = document.getElementById("takeyari-viewer-version");
+  versionTag.innerText = version;
   let configs = read.readAll(CONFIG_DIRECTORY);
   for(let key in configs) {
     setValue(key,configs[key]);
