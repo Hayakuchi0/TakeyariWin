@@ -53,7 +53,7 @@ var buildProject = function() {
       let sendWithBuild = document.getElementById("send-with-build");
       if(sendWithBuild.checked) {
         let protocol = document.getElementById("protocol");
-        if(protocol.value == "none") {
+        if(protocol.value == "protocol_is_not_selecting") {
           put("Please select protocol.");
           return;
         } else {
