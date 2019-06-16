@@ -69,7 +69,7 @@ var saveFtp = function() {
   });
   ftp.save(SEND_DIRECTORY, writeConfig);
 }
-ipcRenderer.on('send-window', function(e, message){
+ipcRender.on('send-window', function(e, message){
   switch(message.type) {
     case "read":
       reloadProtocol(message.protocol, message.path);
