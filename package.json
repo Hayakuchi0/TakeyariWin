@@ -44,7 +44,7 @@
   },
   "homepage": "https://github.com/Hayakuchi0/TakeyariWin#readme",
   "devDependencies": {
-    "electron": "^4.1.1",
+    "electron": "^9.1.0",
     "electron-builder": "^20.39.0",
     "electron-rebuild": "^1.8.4",
     "electron-webpack": "^2.6.2",
